@@ -1,15 +1,15 @@
 use std::fs::File;
 use std::io::BufRead;
 
-pub fn read_file<T, F>(path: &std::path::Path, transform: F) -> std::io::Result<Vec<T>> where F: Fn(&str) -> T {
+pub fn read_file(path: &std::path::Path) -> std::io::Result<Vec<String>> {
     let file = File::open(path)?;
     let reader = std::io::BufReader::new(file);
 
     let data = reader
         .lines()
         .map(|line_result| {
-            line_result.map(|line| transform(&line))
+            line_result.map(|line| line.to_string())
         })
-        .collect::<Result<Vec<T>, std::io::Error>>()?;
+        .collect::<Result<Vec<String>, std::io::Error>>()?;
     Ok(data)
 }
