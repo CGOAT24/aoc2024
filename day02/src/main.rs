@@ -39,27 +39,22 @@ fn is_valid_difference(num1: u16, num2: u16) -> bool {
 }
 
 fn differs_constantly(nums: Vec<u16>) -> bool {
-    if nums[0] > nums[1] {
-        for i in 1..nums.len() {
-            if nums[i] > nums[i - 1] {
-                return false;
-            }
+    let first: i32 = nums[0] as i32;
+    let second: i32 = nums[1] as i32;
+
+    for i in 1..nums.len() {
+        let num1: i32 = nums[i] as i32;
+        let num2: i32 = nums[i - 1] as i32;
+        if (num1 - num2 < 0) == (first - second < 0) {
+            return false;
         }
-        true
     }
-    else {
-        for i in 1..nums.len() {
-            if nums[i] < nums[i - 1] {
-                return false;
-            }
-        }
-        true
-    }
+    true
 }
 
 fn is_report_safe(levels: Vec<u16>) -> bool {
     if differs_constantly(levels.clone()) {
-        for i in (1..levels.len()).rev() {
+        for i in 1..levels.len() {
             if !is_valid_difference(levels[i], levels[i - 1]) {
                 return false;
             }
@@ -69,7 +64,7 @@ fn is_report_safe(levels: Vec<u16>) -> bool {
     false
 }
 
-fn to_u16_vec(input: Vec<String>) -> Vec<Vec<u16>> {
+fn parse_input(input: Vec<String>) -> Vec<Vec<u16>> {
     let mut result: Vec<Vec<u16>> = Vec::new();
 
     for line in input {
@@ -83,7 +78,7 @@ fn to_u16_vec(input: Vec<String>) -> Vec<Vec<u16>> {
 
 fn main() {
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
-    let nums = to_u16_vec(lines);
+    let nums = parse_input(lines);
 
     let result1 = part1(nums.clone());
     let result2 = part2(nums);
