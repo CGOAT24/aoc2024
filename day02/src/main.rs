@@ -1,6 +1,6 @@
-fn part1(input: Vec<Vec<u16>>) -> usize {
+fn part1(reports: Vec<Vec<u16>>) -> usize {
     let mut safe_reports_count = 0;
-    for row in input {
+    for row in reports {
         if is_report_safe(row) {
             safe_reports_count += 1;
         }
@@ -8,9 +8,9 @@ fn part1(input: Vec<Vec<u16>>) -> usize {
     safe_reports_count
 }
 
-fn part2(input: Vec<Vec<u16>>) -> usize {
+fn part2(reports: Vec<Vec<u16>>) -> usize {
     let mut safe_reports_count = 0;
-    for report in input {
+    for report in reports {
         if is_report_safe(report.clone()) {
             safe_reports_count += 1;
         }
@@ -34,28 +34,28 @@ fn remove_bad_level(report: Vec<u16>) -> Option<Vec<u16>> {
     None
 }
 
-fn is_valid_difference(num1: u16, num2: u16) -> bool {
-    num1.abs_diff(num2) <= 3 && num1.abs_diff(num2) >= 1
+fn is_valid_difference(level1: u16, level2: u16) -> bool {
+    level1.abs_diff(level2) <= 3 && level1.abs_diff(level2) >= 1
 }
 
-fn differs_constantly(nums: Vec<u16>) -> bool {
-    let first: i32 = nums[0] as i32;
-    let second: i32 = nums[1] as i32;
+fn differs_constantly(report: Vec<u16>) -> bool {
+    let first_level: i32 = report[0] as i32;
+    let second_level: i32 = report[1] as i32;
 
-    for i in 1..nums.len() {
-        let num1: i32 = nums[i] as i32;
-        let num2: i32 = nums[i - 1] as i32;
-        if (num1 - num2 < 0) == (first - second < 0) {
+    for i in 1..report.len() {
+        let level1: i32 = report[i] as i32;
+        let level2: i32 = report[i - 1] as i32;
+        if (level1 - level2 < 0) == (first_level - second_level < 0) {
             return false;
         }
     }
     true
 }
 
-fn is_report_safe(levels: Vec<u16>) -> bool {
-    if differs_constantly(levels.clone()) {
-        for i in 1..levels.len() {
-            if !is_valid_difference(levels[i], levels[i - 1]) {
+fn is_report_safe(report: Vec<u16>) -> bool {
+    if differs_constantly(report.clone()) {
+        for i in 1..report.len() {
+            if !is_valid_difference(report[i], report[i - 1]) {
                 return false;
             }
         }
@@ -68,20 +68,19 @@ fn parse_input(input: Vec<String>) -> Vec<Vec<u16>> {
     let mut result: Vec<Vec<u16>> = Vec::new();
 
     for line in input {
-        let str_nums = line.split_whitespace().collect::<Vec<&str>>();
-        let nums: Vec<u16> = str_nums.iter().map(|s| s.parse::<u16>().unwrap()).collect();
-        result.push(nums);
+        let str_report = line.split_whitespace().collect::<Vec<&str>>();
+        let report: Vec<u16> = str_report.iter().map(|s| s.parse::<u16>().unwrap()).collect();
+        result.push(report);
     }
-
     result
 }
 
 fn main() {
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
-    let nums = parse_input(lines);
+    let reports = parse_input(lines);
 
-    let result1 = part1(nums.clone());
-    let result2 = part2(nums);
+    let result1 = part1(reports.clone());
+    let result2 = part2(reports);
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
 }
