@@ -6,13 +6,11 @@ fn part1(rules: &Vec<(u32, u32)>, updates: &Vec<Vec<u32>>) -> u32 {
 }
 
 fn part2(rules: &Vec<(u32, u32)>, updates: &Vec<Vec<u32>>) -> u32 {
-    let fixed: Vec<Vec<u32>> = updates
+    updates
         .iter()
         .filter(|update| !is_update_valid(&update, &rules))
         .map(|update| fix_ordering(update, rules))
-        .collect();
-
-    part1(&rules, &fixed)
+        .fold(0, |acc, update| acc + get_middle_entry(&update))
 }
 
 fn fix_ordering(update: &Vec<u32>, rules: &Vec<(u32, u32)>) -> Vec<u32> {
@@ -32,7 +30,7 @@ fn fix_ordering(update: &Vec<u32>, rules: &Vec<(u32, u32)>) -> Vec<u32> {
     fixed
 }
 
-fn get_page_ordering_rules(lines: &Vec<String>) -> Vec<(u32, u32)> {
+fn get_rules(lines: &Vec<String>) -> Vec<(u32, u32)> {
     lines
         .iter()
         .map(|line| {
@@ -87,7 +85,7 @@ fn get_middle_entry(update: &Vec<u32>) -> u32 {
 fn main() {
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
 
-    let rules = get_page_ordering_rules(&lines);
+    let rules = get_rules(&lines);
     let updates = get_updates(&lines);
 
     let result1 = part1(&rules, &updates);
@@ -96,5 +94,3 @@ fn main() {
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
 }
-
-
