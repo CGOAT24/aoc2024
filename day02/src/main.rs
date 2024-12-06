@@ -1,11 +1,8 @@
 fn part1(reports: &Vec<Vec<u16>>) -> usize {
-    let mut safe_reports_count = 0;
-    for row in reports {
-        if is_report_safe(&row) {
-            safe_reports_count += 1;
-        }
-    }
-    safe_reports_count
+    reports
+        .iter()
+        .filter(|&report| is_report_safe(report))
+        .count()
 }
 
 fn part2(reports: &Vec<Vec<u16>>) -> usize {
@@ -24,14 +21,16 @@ fn part2(reports: &Vec<Vec<u16>>) -> usize {
 }
 
 fn remove_bad_level(report: &Vec<u16>) -> Option<Vec<u16>> {
-    for i in 0..report.len() {
+    report.iter().enumerate().find_map(|(i, _)| {
         let mut fixed = report.clone();
         fixed.remove(i);
         if is_report_safe(&fixed) {
-            return Some(fixed);
+            Some(fixed)
         }
-    }
-    None
+        else {
+            None
+        }
+    })
 }
 
 fn is_valid_difference(level1: u16, level2: u16) -> bool {
@@ -65,14 +64,15 @@ fn is_report_safe(report: &Vec<u16>) -> bool {
 }
 
 fn parse_input(input: Vec<String>) -> Vec<Vec<u16>> {
-    let mut result: Vec<Vec<u16>> = Vec::new();
-
-    for line in input {
-        let str_report = line.split_whitespace().collect::<Vec<&str>>();
-        let report: Vec<u16> = str_report.iter().map(|s| s.parse::<u16>().unwrap()).collect();
-        result.push(report);
-    }
-    result
+    input
+        .iter()
+        .map(|line|
+            line
+                .split_whitespace()
+                .map(|s| s.parse::<u16>().unwrap())
+                .collect()
+        )
+        .collect()
 }
 
 fn main() {
@@ -81,6 +81,7 @@ fn main() {
 
     let result1 = part1(&reports);
     let result2 = part2(&reports);
+
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
 }
