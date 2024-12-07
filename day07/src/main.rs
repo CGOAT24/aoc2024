@@ -1,7 +1,14 @@
-#[derive(Debug)]
+use std::fmt::Debug;
+
 struct Equation {
     result: u64,
     numbers: Vec<u64>
+}
+
+impl Debug for Equation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}: {:?}", self.result, self.numbers)
+    }
 }
 
 enum Operator {
@@ -12,7 +19,7 @@ enum Operator {
 
 fn calc_total_calibration(equations: &Vec<Equation>, base: usize) -> u64 {
     equations.iter().fold(0, |acc, eq| {
-        println!("Calculating calibration in base {} for: {:?}", base, eq);
+        println!("Checking in base {} for: {:?}", base, eq);
         let combinations = get_total_combinations(eq.numbers.len() - 1, base);
         acc + find_calibration_result(eq, &combinations)
     })
