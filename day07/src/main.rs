@@ -38,15 +38,9 @@ fn get_equations(lines: &Vec<String>) -> Vec<Equation> {
 
 fn part1(eq: &Equation) -> u64 {
     let num_combinations = 1 << eq.numbers.len() - 1;
-    let mut total_combinations: Vec<Vec<Operator>> = Vec::new();
+    let mut total_combinations: Vec<Vec<Operator>> = (0..num_combinations).map(|i| (0..eq.numbers.len() - 1).map(|bit| (i & (1 << bit)) != 0).map(|x| if x { Operator::Add } else { Operator::Multiply }).collect()).collect();
 
-    for i in 0..num_combinations {
-        let combination: Vec<Operator> = (0..eq.numbers.len() - 1).map(|bit| (i & (1 << bit)) != 0).map(|x| if x { Operator::Add } else { Operator::Multiply }).collect();
-        total_combinations.push(combination);
-    }
     let mut count = 0;
-
-
     for combination in total_combinations {
         if is_calibrated(&eq.numbers, &combination, eq.result) {
             count += eq.result;
