@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use log::debug;
 
 #[derive(Debug)]
 struct Equation {
@@ -38,7 +39,12 @@ fn get_equations(lines: &Vec<String>) -> Vec<Equation> {
 
 fn part1(eq: &Equation) -> u64 {
     let num_combinations = 1 << eq.numbers.len() - 1;
-    let mut total_combinations: Vec<Vec<Operator>> = (0..num_combinations).map(|i| (0..eq.numbers.len() - 1).map(|bit| (i & (1 << bit)) != 0).map(|x| if x { Operator::Add } else { Operator::Multiply }).collect()).collect();
+    let mut total_combinations: Vec<Vec<Operator>> = (0..num_combinations)
+        .map(|i| (0..eq.numbers.len() - 1)
+            .map(|bit| (i & (1 << bit)) != 0)
+            .map(|x| if x { Operator::Add } else { Operator::Multiply })
+            .collect())
+        .collect();
 
     let mut count = 0;
     for combination in total_combinations {
@@ -51,7 +57,34 @@ fn part1(eq: &Equation) -> u64 {
 }
 
 fn part2(eq: &Equation) -> u64 {
-    todo!()
+    let num_combinations = 3usize.pow((eq.numbers.len() - 1) as u32);
+    let mut total_combinations: Vec<Vec<Operator>> = Vec::new();
+
+    for i in 0..num_combinations {
+        let mut combination = Vec::new();
+        let mut n = i;
+
+        for _ in 0..eq.numbers.len() - 1 {
+            combination.push((n % 3) as u8);
+            n /= 3;
+        }
+
+        total_combinations.push(combination.iter().map(|x| match x {
+            0 => Operator::Add,
+            1 => Operator::Multiply,
+            2 => Operator::Concat,
+            _ => panic!("Invalid operator")
+        }).collect());
+    }
+    let mut count = 0;
+    for combination in total_combinations {
+        if is_calibrated(&eq.numbers, &combination, eq.result) {
+            count += eq.result;
+            println!("{:?} = {}", combination, eq.result);
+            break;
+        }
+    }
+    count
 }
 
 fn is_calibrated(numbers: &Vec<u64>, operators: &Vec<Operator>, expected: u64) -> bool {
@@ -61,7 +94,7 @@ fn is_calibrated(numbers: &Vec<u64>, operators: &Vec<Operator>, expected: u64) -
         match operators[op_index] {
             Operator::Add => result += numbers[i],
             Operator::Multiply => result *= numbers[i],
-            Operator::Concat => result = result * 10 + numbers[i]
+            Operator::Concat => result = (result.to_string() + numbers[i].to_string().as_str()).parse::<u64>().unwrap()
         }
         op_index += 1;
     }
@@ -73,6 +106,7 @@ fn main() {
     let equations = get_equations(&lines);
 
     let result1: u64 = equations.iter().map(|eq| part1(eq)).sum();
-    //let result2: u64 = equations.iter().map(|eq| part2(eq)).sum();
+    let result2: u64 = equations.iter().map(|eq| part2(eq)).sum();
     println!("Part 1: {}", result1);
+    println!("Part 2: {}", result2);
 }
