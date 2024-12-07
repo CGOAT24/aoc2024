@@ -1,4 +1,5 @@
 use std::collections::{HashSet, LinkedList};
+use std::time::Instant;
 
 #[derive(Clone, Eq, Hash, PartialEq)]
 enum CellType {
@@ -232,6 +233,7 @@ fn parse_map(lines: &Vec<String>) -> Map {
 }
 
 fn main() {
+    let now = Instant::now();
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
     let mut map = parse_map(&lines);
 
@@ -242,4 +244,5 @@ fn main() {
 
     println!("Part 1: {}", map1.get_unique_visited().len());
     println!("Part 2: {}", result2);
+    println!("Time elapsed: {}ms", now.elapsed().as_millis());
 }

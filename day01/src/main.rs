@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::time::Instant;
 use utils;
 
 fn part1(vec1: &Vec<u64>, vec2: &Vec<u64>) -> u64 {
@@ -42,6 +43,7 @@ fn parse_input(lines: Vec<String>) -> (Vec<u64>, Vec<u64>) {
 }
 
 fn main() {
+    let now = Instant::now();
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
 
     let (vec1, vec2) = parse_input(lines);
@@ -50,4 +52,5 @@ fn main() {
 
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
+    println!("Time elapsed: {}ms", now.elapsed().as_millis());
 }

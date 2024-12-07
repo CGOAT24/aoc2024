@@ -1,3 +1,4 @@
+use std::time::Instant;
 use regex::Regex;
 
 fn calc_sum(script: &Vec<(u32, u32)>) -> u32 {
@@ -46,6 +47,7 @@ fn part2(lines: &Vec<String>) -> Vec<(u32, u32)> {
 }
 
 fn main() {
+    let now = Instant::now();
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
 
     let script1 = part1(&lines);
@@ -56,4 +58,5 @@ fn main() {
 
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
+    println!("Time elapsed: {}ms", now.elapsed().as_millis());
 }

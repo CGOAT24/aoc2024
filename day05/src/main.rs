@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 fn part1(rules: &Vec<(u32, u32)>, updates: &Vec<Vec<u32>>) -> u32 {
     updates
         .iter()
@@ -83,6 +85,7 @@ fn get_middle_entry(update: &Vec<u32>) -> u32 {
 }
 
 fn main() {
+    let now = Instant::now();
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
 
     let rules = get_rules(&lines);
@@ -93,4 +96,5 @@ fn main() {
 
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
+    println!("Time elapsed: {}ms", now.elapsed().as_millis());
 }

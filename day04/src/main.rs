@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 mod tests;
 
 trait VecStringExt {
@@ -96,6 +98,7 @@ fn part2(lines: &Vec<String>) -> usize {
 }
 
 fn main() {
+    let now = Instant::now();
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
 
     let result1 = part1(&lines);
@@ -103,5 +106,6 @@ fn main() {
 
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
+    println!("Time elapsed: {}ms", now.elapsed().as_millis());
 }
 

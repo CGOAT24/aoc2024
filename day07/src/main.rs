@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use std::time::Instant;
 
 struct Equation {
     result: u64,
@@ -19,7 +20,10 @@ enum Operator {
 
 fn calc_total_calibration(equations: &Vec<Equation>, base: usize) -> u64 {
     equations.iter().fold(0, |acc, eq| {
-        println!("Checking in base {} for: {:?}", base, eq);
+        if cfg!(debug_assertions) {
+            println!("Checking in base {} for: {:?}", base, eq);
+        }
+
         let combinations = get_total_combinations(eq.numbers.len() - 1, base);
         acc + find_calibration_result(eq, &combinations)
     })
@@ -85,6 +89,7 @@ fn is_calibrated(numbers: &Vec<u64>, operators: &Vec<Operator>, expected: u64) -
 }
 
 fn main() {
+    let now = Instant::now();
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
     let equations = get_equations(&lines);
 
@@ -93,4 +98,5 @@ fn main() {
 
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
+    println!("Time elapsed: {}ms", now.elapsed().as_millis());
 }

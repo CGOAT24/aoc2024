@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 fn part1(reports: &Vec<Vec<u16>>) -> usize {
     reports
         .iter()
@@ -76,6 +78,7 @@ fn parse_input(input: Vec<String>) -> Vec<Vec<u16>> {
 }
 
 fn main() {
+    let now = Instant::now();
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
     let reports = parse_input(lines);
 
@@ -84,4 +87,5 @@ fn main() {
 
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
+    println!("Time elapsed: {}ms", now.elapsed().as_millis());
 }
