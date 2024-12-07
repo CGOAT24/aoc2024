@@ -1,6 +1,3 @@
-use std::fmt::Debug;
-use log::debug;
-
 #[derive(Debug)]
 struct Equation {
     result: u64,
@@ -13,14 +10,12 @@ enum Operator {
     Concat
 }
 
-impl Debug for Operator {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Operator::Add => write!(f, "+"),
-            Operator::Multiply => write!(f, "*"),
-            Operator::Concat => write!(f, "||")
-        }
-    }
+fn calc_total_calibration(equations: &Vec<Equation>, base: usize) -> u64 {
+    equations.iter().fold(0, |acc, eq| {
+        println!("Calculating calibration in base {} for: {:?}", base, eq);
+        let combinations = get_total_combinations(eq.numbers.len() - 1, base);
+        acc + find_calibration_result(eq, &combinations)
+    })
 }
 
 fn get_equations(lines: &Vec<String>) -> Vec<Equation> {
@@ -37,67 +32,48 @@ fn get_equations(lines: &Vec<String>) -> Vec<Equation> {
     }).collect()
 }
 
-fn part1(eq: &Equation) -> u64 {
-    let num_combinations = 1 << eq.numbers.len() - 1;
-    let mut total_combinations: Vec<Vec<Operator>> = (0..num_combinations)
-        .map(|i| (0..eq.numbers.len() - 1)
-            .map(|bit| (i & (1 << bit)) != 0)
-            .map(|x| if x { Operator::Add } else { Operator::Multiply })
-            .collect())
-        .collect();
-
-    let mut count = 0;
-    for combination in total_combinations {
-        if is_calibrated(&eq.numbers, &combination, eq.result) {
-            count += eq.result;
-            break;
-        }
-    }
-    count
-}
-
-fn part2(eq: &Equation) -> u64 {
-    let num_combinations = 3usize.pow((eq.numbers.len() - 1) as u32);
-    let mut total_combinations: Vec<Vec<Operator>> = Vec::new();
+fn get_total_combinations(size: usize, base: usize) -> Vec<Vec<Operator>> {
+    let mut vec = Vec::new();
+    let num_combinations = base.pow(size as u32);
 
     for i in 0..num_combinations {
         let mut combination = Vec::new();
         let mut n = i;
 
-        for _ in 0..eq.numbers.len() - 1 {
-            combination.push((n % 3) as u8);
-            n /= 3;
+        for _ in 0..size {
+            combination.push((n % base) as u8);
+            n /= base;
         }
-
-        total_combinations.push(combination.iter().map(|x| match x {
+        vec.push(combination.iter().map(|x| match x {
             0 => Operator::Add,
             1 => Operator::Multiply,
             2 => Operator::Concat,
             _ => panic!("Invalid operator")
         }).collect());
     }
-    let mut count = 0;
-    for combination in total_combinations {
-        if is_calibrated(&eq.numbers, &combination, eq.result) {
-            count += eq.result;
-            println!("{:?} = {}", combination, eq.result);
-            break;
-        }
+    vec
+}
+
+fn find_calibration_result(eq: &Equation, total_combinations: &Vec<Vec<Operator>>) -> u64 {
+    if total_combinations.iter().any(|c| is_calibrated(&eq.numbers, c, eq.result)) {
+        eq.result
     }
-    count
+    else {
+        0
+    }
 }
 
 fn is_calibrated(numbers: &Vec<u64>, operators: &Vec<Operator>, expected: u64) -> bool {
     let mut result = numbers[0];
     let mut op_index = 0;
-    for i in 1..numbers.len() {
+    numbers.iter().skip(1).for_each(|num| {
         match operators[op_index] {
-            Operator::Add => result += numbers[i],
-            Operator::Multiply => result *= numbers[i],
-            Operator::Concat => result = (result.to_string() + numbers[i].to_string().as_str()).parse::<u64>().unwrap()
+            Operator::Add => result += num,
+            Operator::Multiply => result *= num,
+            Operator::Concat => result = (result.to_string() + num.to_string().as_str()).parse::<u64>().unwrap()
         }
         op_index += 1;
-    }
+    });
     result == expected
 }
 
@@ -105,8 +81,9 @@ fn main() {
     let lines = utils::read_file("input.txt".as_ref()).unwrap();
     let equations = get_equations(&lines);
 
-    let result1: u64 = equations.iter().map(|eq| part1(eq)).sum();
-    let result2: u64 = equations.iter().map(|eq| part2(eq)).sum();
+    let result1: u64 = calc_total_calibration(&equations, 2);
+    let result2: u64 = calc_total_calibration(&equations, 3);
+
     println!("Part 1: {}", result1);
     println!("Part 2: {}", result2);
 }
